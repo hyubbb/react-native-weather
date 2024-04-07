@@ -1,0 +1,23 @@
+{
+  "clouds": 0,
+  "dew_point": 2.03,
+  "dt": 1712410682,
+  "feels_like": 8.72,
+  "humidity": 57,
+  "pressure": 1018,
+  "sunrise": 1712351377,
+  "sunset": 1712397487,
+  "temp": 10.16,
+  "uvi": 0,
+  "visibility": 10000,
+  "weather": [
+    {
+      "description": "맑음",
+      "icon": "01n",
+      "id": 800,
+      "main": "Clear"
+    }
+  ],
+  "wind_deg": 200,
+  "wind_speed": 0.51
+}

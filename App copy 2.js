@@ -1,3 +1,5 @@
+// api 유료버전, today데이터 따로 추출하기전
+
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -11,7 +13,6 @@ import {
 import * as Location from "expo-location";
 import handlerDate from "./util/date";
 import { Ionicons } from "@expo/vector-icons";
-import ForecastList from "./components/ForecastList";
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const API_KEY = "33b109a878114628aac83697a2d91b0f";
 
@@ -62,16 +63,9 @@ export default function App() {
     const data = await response.json();
     const { daily, current } = data;
     const { dt: todayDate, weather: todayWeather, temp } = current;
-    const currentDateTime = handlerDate(todayDate);
+    const currentDateTime = handlerDate(todayDate).date;
     const todayTemp = daily[0].temp;
-    console.log(current);
-    const todayData = {
-      ...current,
-      nowTemp: temp,
-      temp: todayTemp,
-      date: currentDateTime,
-    };
-    setToday(todayData);
+    setToday({ temp: todayTemp, date: currentDateTime });
     setDays(daily);
   };
 
@@ -85,43 +79,56 @@ export default function App() {
         <View style={styles.city}>
           <Text style={styles.cityName}>{city}</Text>
         </View>
-
-        {days.length === 0 ? (
-          <View style={styles.day}>
-            <ActivityIndicator />
-          </View>
-        ) : (
-          <>
+        <ScrollView
+          contentContainerStyle={styles.weather}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator='false'
+        >
+          {days.length === 0 ? (
             <View style={styles.day}>
-              <View style={styles.dateBox}>
-                <Text style={styles.date}>{today.date.koDate}</Text>
-                <Text style={styles.date}>{today.date.weekday}</Text>
-              </View>
-              <View>
-                <Ionicons
-                  name={icons[today.weather[0].main]}
-                  size={40}
-                  style={styles.icon}
-                  color='#fff'
-                />
-                <Text style={styles.temp}>
-                  {parseFloat(today.nowTemp).toFixed(1)} °
-                </Text>
-              </View>
-
-              <Text style={styles.description}>
-                {today.weather[0].description}
-              </Text>
-              <View style={styles.maxminTempBox}>
-                <Text style={styles.maxminTemp}>
-                  {" " + parseFloat(today.temp.max).toFixed(1)}°/
-                  {" " + parseFloat(today.temp.min).toFixed(1)}°
-                </Text>
-              </View>
+              <ActivityIndicator />
             </View>
-            <ForecastList days={days} />
-          </>
-        )}
+          ) : (
+            <>
+              {days.map((day, idx) => {
+                const { weather, dt, temp, maxTemp } = day;
+                const { main, description } = weather[0];
+                const { koDate, weekday } = handlerDate(dt);
+                return (
+                  <View key={idx} style={styles.day}>
+                    <View style={styles.dateBox}>
+                      <Text style={styles.date}>{koDate}</Text>
+                      <Text style={styles.date}>{weekday}</Text>
+                    </View>
+                    <View>
+                      <Ionicons
+                        name={icons[main]}
+                        size={40}
+                        style={styles.icon}
+                        color='#fff'
+                      />
+                      <Text style={styles.temp}>
+                        {idx === 0
+                          ? parseFloat(today.temp.day).toFixed(1)
+                          : parseFloat(temp.day).toFixed(1)}
+                      </Text>
+                    </View>
+                    {/* <Text style={styles.tinyText}></Text> */}
+
+                    <Text style={styles.description}>{description}</Text>
+                    <View style={styles.maxminTempBox}>
+                      <Text style={styles.maxminTemp}>
+                        {" " + parseFloat(temp.max).toFixed(1)}°/
+                        {" " + parseFloat(temp.min).toFixed(1)}°
+                      </Text>
+                    </View>
+                  </View>
+                );
+              })}
+            </>
+          )}
+        </ScrollView>
       </View>
     </>
   );
