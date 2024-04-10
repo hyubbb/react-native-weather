@@ -13,7 +13,7 @@ import handlerDate from "./util/date";
 import { Ionicons } from "@expo/vector-icons";
 import ForecastList from "./components/ForecastList";
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const API_KEY = "33b109a878114628aac83697a2d91b0f";
+const API_KEY = process.env.API_KEY;
 
 const icons = {
   Clear: "sunny",
@@ -31,7 +31,6 @@ export default function App() {
 
   const [days, setDays] = useState([]);
   const [today, setToday] = useState([]);
-  const [forecastDays, setForecastDays] = useState([]);
   const getWeather = async () => {
     const { granted } = await Location.requestForegroundPermissionsAsync();
     if (!granted) {
